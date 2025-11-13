@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <h1>it Академия </h1>
+        <button class="burger" aria-label="Toggle menu" aria-expanded="false">
+            <span class="burger-line"></span>
+            <span class="burger-line"></span>
+            <span class="burger-line"></span>
+        </button>
+        <ul class="nav">
+            <li>Главные</li>
+            <li>о нас</li>
+            <li>Карточки</li>
+            <li>Контакты </li>
+        </ul>
+    </header>
+
+
+    <div class="pro-wrap">
+        <div class="pro-left">
+            <h1 class="pro">Практика FLEXBOX- <br>
+            простая строница упражнений</h1>
+
+            <button class="alert-btn" type="button">Показать alert</button>
+
+            <div class="timer-wrap">
+                <h3>Таймер</h3>
+                <div id="timer">0</div>
+                <button id="start-timer" class="start-timer" type="button">Старт</button>
+                <div id="random-words" class="random-words" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <img class="pro-image" src="./Снимок экрана 2025-11-13 221924.png" alt="pro фото">
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            // Бургер-меню
+            const burger = document.querySelector('.burger');
+            const nav = document.querySelector('header .nav');
+            if(burger && nav){
+                burger.addEventListener('click', function(){
+                    const expanded = this.getAttribute('aria-expanded') === 'true';
+                    this.setAttribute('aria-expanded', String(!expanded));
+                    nav.classList.toggle('open');
+                });
+            }
+
+            // Alert-кнопка
+            const alertBtn = document.querySelector('.alert-btn');
+            if(alertBtn){
+                alertBtn.addEventListener('click', function(){
+                    alert('hello world');
+                });
+            }
+
+            // Таймер: до 50 секунд + смена цветов по порогам и показ случайных слов в конце
+            const startBtn = document.getElementById('start-timer');
+            const timerEl = document.getElementById('timer');
+            const randomEl = document.getElementById('random-words');
+            let intervalId = null;
+            let seconds = 0;
+            const originalBg = getComputedStyle(document.body).backgroundColor || '';
+
+            const words = ['Удача','Фокус','Прогресс','Вызов','Решение','Сила','Творчество','Идея','Вдохновение','Успех'];
+
+            const thresholds = {
+                3: 'red',
+                6: 'blue',
+                9: 'green',
+                15: 'orange',
+                25: 'purple',
+                35: 'gold',
+                45: '#0db9b9',
+                50: '#111'
+            };
+
+            function showRandomSequence(){
+                const count = 6;
+                let i = 0;
+                randomEl.textContent = '';
+                const showId = setInterval(()=>{
+                    const w = words[Math.floor(Math.random()*words.length)];
+                    const span = document.createElement('div');
+                    span.textContent = w;
+                    span.className = 'random-word-item';
+                    randomEl.appendChild(span);
+                    i++;
+                    if(i>=count){
+                        clearInterval(showId);
+                        startBtn.disabled = false;
+                        // вернуть фон через небольшую задержку
+                        setTimeout(()=>{ document.body.style.backgroundColor = originalBg; }, 800);
+                    }
+                }, 450);
+            }
+
+            function tick(){
+                seconds++;
+                if(timerEl) timerEl.textContent = seconds;
+                if(thresholds[seconds]) document.body.style.backgroundColor = thresholds[seconds];
+                if(seconds >= 50){
+                    clearInterval(intervalId);
+                    intervalId = null;
+                    showRandomSequence();
+                }
+            }
+
+            if(startBtn){
+                startBtn.addEventListener('click', function(){
+                    if(intervalId) return;
+                    seconds = 0;
+                    if(timerEl) timerEl.textContent = seconds;
+                    if(randomEl) randomEl.textContent = '';
+                    document.body.style.backgroundColor = originalBg;
+                    startBtn.disabled = true;
+                    intervalId = setInterval(tick, 1000);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
